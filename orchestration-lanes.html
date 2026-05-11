@@ -84,29 +84,19 @@
   @media (max-width: 900px) {
     .page { grid-template-columns: 1fr; gap: 16px; padding: 16px 14px 64px; }
   }
-  .topbar-inner { max-width: 1320px; }
-
-  /* header */
-  .topbar {
+  /* sidebar header */
+  .sidebar-header {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 12px; padding-bottom: 14px; margin-bottom: 14px;
     border-bottom: 1px solid var(--rule);
-    background: var(--bg);
-    position: sticky; top: 0; z-index: 10;
   }
-  .topbar-inner {
-    max-width: 1180px; margin: 0 auto;
-    padding: 14px 32px;
-    display: flex; align-items: baseline; gap: 16px; justify-content: space-between;
-  }
-  @media (max-width: 900px) { .topbar-inner { padding: 10px 14px; } }
   .brand {
     font-weight: 600; letter-spacing: -0.01em; font-size: 0.95rem;
   }
   .brand .dot {
     display: inline-block; width: 8px; height: 8px;
     background: var(--accent); margin-right: 8px; transform: translateY(-1px);
-    border-radius: 1px;
   }
-  .topbar-actions { display: flex; gap: 8px; align-items: center; }
   .btn {
     appearance: none; background: var(--paper); color: var(--ink);
     border: 1px solid var(--rule); padding: 6px 10px;
@@ -120,12 +110,12 @@
   /* sticky toc */
   nav.toc {
     position: sticky;
-    top: 60px;
+    top: 32px;
     align-self: start;
     border-left: 1px solid var(--rule);
     padding: 0 0 0 14px;
     font-size: 0.88rem;
-    max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 64px);
     overflow: auto;
   }
   nav.toc ol { list-style: none; padding: 0; margin: 0; }
@@ -400,7 +390,7 @@
   @media print {
     @page { size: A4 portrait; margin: 16mm; }
     body { background: #fff; color: #000; font-size: 10pt; }
-    .topbar, nav.toc, .no-print { display: none !important; }
+    nav.toc, .no-print { display: none !important; }
     .page { display: block; padding: 0; }
     main { width: 100%; }
     section.block { border-color: #000; page-break-inside: avoid; margin-bottom: 14px; }
@@ -424,18 +414,13 @@
 </style>
 </head>
 <body>
-<header class="topbar no-print">
-  <div class="topbar-inner">
-    <div class="brand"><span class="dot"></span>Orchestration lanes</div>
-    <div class="topbar-actions">
-      <button class="btn" id="theme-toggle" title="Toggle dark mode">Dark</button>
-    </div>
-  </div>
-</header>
-
 <div class="page">
 
   <nav class="toc" aria-label="Table of contents">
+    <div class="sidebar-header no-print">
+      <div class="brand"><span class="dot"></span>Orchestration lanes</div>
+      <button class="btn" id="theme-toggle" title="Toggle dark mode">Dark</button>
+    </div>
     <button type="button" class="toc-toggle" aria-expanded="false">Contents</button>
     <div id="toc-inner">
       <div class="group">Frame</div>
