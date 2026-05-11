@@ -363,6 +363,11 @@
     padding: 10px 14px; margin: 14px 0; font-size: 0.92rem;
   }
   .rule-callout strong { color: var(--accent-2); }
+  .note {
+    border-left: 3px solid var(--accent); background: var(--accent-soft);
+    padding: 10px 14px; margin: 14px 0; font-size: 0.92rem;
+  }
+  .note strong { color: var(--accent); }
 
   /* SVG common */
   svg .box {
@@ -393,18 +398,19 @@
 
   /* print */
   @media print {
-    @page { size: A4 portrait; margin: 14mm; }
+    @page { size: A4 portrait; margin: 16mm; }
     body { background: #fff; color: #000; font-size: 10pt; }
-    .topbar, nav.toc, .no-print, .verdict, .chooser, .checklist,
-    section.block:not(#quick-ref), .reset-link { display: none !important; }
+    .topbar, nav.toc, .no-print { display: none !important; }
     .page { display: block; padding: 0; }
     main { width: 100%; }
-    #quick-ref { border: 1px solid #000; padding: 14px; page-break-inside: avoid; }
+    section.block { border-color: #000; page-break-inside: avoid; margin-bottom: 14px; }
+    .diagram-frame { page-break-inside: avoid; }
+    .qref { border: 1px solid #000; }
     .qref-meta .stamp { display: none; }
-    .qref h3 { margin-top: 12px; font-size: 11pt; }
-    table.lanes-overview { font-size: 9pt; }
     .rule-callout { border: 1px solid #000; background: #fff; }
+    .note { border-left-color: #000; background: #fff; }
     .chip { border: 1px solid #000; background: #fff; color: #000; }
+    a { color: #000; }
   }
 
   /* tiny utilities */
@@ -423,7 +429,6 @@
     <div class="brand"><span class="dot"></span>Orchestration lanes</div>
     <div class="topbar-actions">
       <button class="btn" id="theme-toggle" title="Toggle dark mode">Dark</button>
-      <button class="btn" id="print-btn" title="Print the quick reference card">Print card</button>
     </div>
   </div>
 </header>
@@ -437,6 +442,7 @@
       <ol>
         <li><a href="#opening">The problem</a></li>
         <li><a href="#chooser">Lane chooser</a></li>
+        <li><a href="#lanes-compose">Lanes compose</a></li>
       </ol>
       <div class="group">The five lanes</div>
       <ol>
@@ -469,6 +475,15 @@
       accidental inconsistency (a method pretending to be a saga). The lanes below are a way to
       name the choice. Each lane has a distinct owner, duration, persistence model, and visibility
       profile. Pick by what the work <em>is</em>, not by what is currently nearby in the codebase.
+    </p>
+    <p>
+      The lanes are not new ideas — they are positions on a spectrum already mapped elsewhere.
+      Lane 3 and Lanes 4/5 descend from the Process Manager pattern in Hohpe and Woolf's
+      <em>Enterprise Integration Patterns</em> (2003). Richardson's saga work distinguishes
+      orchestration-based and choreography-based variants — the former is Lane 3 here; the latter
+      is a sub-mode of Lane 2. "Durable execution," the term Temporal popularised for what
+      workflow engines provide, is what Lane 3 implements by hand and what Lanes 4 and 5 inherit
+      from the engine.
     </p>
 
     <div class="diagram-frame" aria-label="The five lanes at a glance">
@@ -566,19 +581,19 @@
           <text x="600" y="0" text-anchor="middle" class="sub">journey + risk</text>
           <text x="790" y="0" text-anchor="middle" class="sub">ops / platform</text>
 
-          <text x="0" y="18" class="mono">duration</text>
-          <text x="80" y="18" text-anchor="middle" class="sub">ms</text>
-          <text x="250" y="18" text-anchor="middle" class="sub">seconds–minutes</text>
-          <text x="420" y="18" text-anchor="middle" class="sub">minutes–hours</text>
-          <text x="600" y="18" text-anchor="middle" class="sub">hours–weeks</text>
-          <text x="790" y="18" text-anchor="middle" class="sub">hours–weeks</text>
+          <text x="0" y="18" class="mono">state</text>
+          <text x="80" y="18" text-anchor="middle" class="sub">db row</text>
+          <text x="250" y="18" text-anchor="middle" class="sub">per consumer</text>
+          <text x="420" y="18" text-anchor="middle" class="sub">db state machine</text>
+          <text x="600" y="18" text-anchor="middle" class="sub">engine history</text>
+          <text x="790" y="18" text-anchor="middle" class="sub">engine history</text>
 
-          <text x="0" y="36" class="mono">state</text>
-          <text x="80" y="36" text-anchor="middle" class="sub">db row</text>
-          <text x="250" y="36" text-anchor="middle" class="sub">per consumer</text>
-          <text x="420" y="36" text-anchor="middle" class="sub">db state machine</text>
-          <text x="600" y="36" text-anchor="middle" class="sub">engine history</text>
-          <text x="790" y="36" text-anchor="middle" class="sub">engine history</text>
+          <text x="0" y="36" class="mono">duration</text>
+          <text x="80" y="36" text-anchor="middle" class="sub">ms</text>
+          <text x="250" y="36" text-anchor="middle" class="sub">seconds–minutes</text>
+          <text x="420" y="36" text-anchor="middle" class="sub">minutes–hours</text>
+          <text x="600" y="36" text-anchor="middle" class="sub">hours–weeks</text>
+          <text x="790" y="36" text-anchor="middle" class="sub">hours–weeks</text>
 
           <text x="0" y="54" class="mono">visibility</text>
           <text x="80" y="54" text-anchor="middle" class="sub">logs</text>
@@ -610,6 +625,94 @@
         <div class="alt-note" id="reco-alt" style="display:none;"></div>
         <span class="reset-link" id="reset-chooser">Reset answers</span>
       </aside>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 2.5 LANES COMPOSE                                       -->
+  <!-- ====================================================== -->
+  <section class="block" id="lanes-compose">
+    <h2><span class="num">§2½</span> Lanes compose</h2>
+    <p>
+      The lanes are not parallel choices — they layer. A Lane 4 workflow calls journey services
+      that themselves do Lane 1 work and may emit Lane 2 events. A Lane 5 routine composes Lane 1
+      services. The lanes describe where the orchestration lives, not where every action happens.
+    </p>
+
+    <div class="diagram-frame" aria-label="A flow composing lanes 4, 5, 1, and 2">
+      <svg viewBox="0 0 760 410" role="img" aria-labelledby="compose-title">
+        <title id="compose-title">Lanes compose: engines conduct, journey services write, the bus carries side-effects</title>
+
+        <!-- left-side row labels -->
+        <text x="0" y="76"  class="sub">orchestration</text>
+        <text x="0" y="210" class="sub">writes</text>
+        <text x="0" y="312" class="sub">side-effects</text>
+
+        <!-- Lane 4 engine -->
+        <polygon class="engine" points="200,30 360,30 390,70 360,110 200,110 170,70"/>
+        <text x="280" y="64" text-anchor="middle" class="label">Lane 4 engine</text>
+        <text x="280" y="80" text-anchor="middle" class="sub">conducts journey</text>
+
+        <!-- Lane 5 engine -->
+        <polygon class="engine" points="490,30 630,30 660,70 630,110 490,110 460,70"/>
+        <text x="560" y="64" text-anchor="middle" class="label">Lane 5 engine</text>
+        <text x="560" y="80" text-anchor="middle" class="sub">operational routine</text>
+
+        <!-- Journey A (Lane 1) -->
+        <g transform="translate(60,170)">
+          <rect class="box" x="0" y="0" width="120" height="64"/>
+          <text x="60" y="18" text-anchor="middle" class="label">journey A</text>
+          <text x="60" y="32" text-anchor="middle" class="sub">Lane 1</text>
+          <path class="db-body" d="M30,42 a30,5 0 0 0 60,0 v10 a30,5 0 0 1 -60,0 z M30,42 a30,5 0 0 1 60,0 a30,5 0 0 1 -60,0 z"/>
+        </g>
+        <!-- Journey B (Lane 1) -->
+        <g transform="translate(230,170)">
+          <rect class="box" x="0" y="0" width="120" height="64"/>
+          <text x="60" y="18" text-anchor="middle" class="label">journey B</text>
+          <text x="60" y="32" text-anchor="middle" class="sub">Lane 1</text>
+          <path class="db-body" d="M30,42 a30,5 0 0 0 60,0 v10 a30,5 0 0 1 -60,0 z M30,42 a30,5 0 0 1 60,0 a30,5 0 0 1 -60,0 z"/>
+        </g>
+        <!-- Journey C (Lane 1) -->
+        <g transform="translate(400,170)">
+          <rect class="box" x="0" y="0" width="120" height="64"/>
+          <text x="60" y="18" text-anchor="middle" class="label">journey C</text>
+          <text x="60" y="32" text-anchor="middle" class="sub">Lane 1</text>
+          <path class="db-body" d="M30,42 a30,5 0 0 0 60,0 v10 a30,5 0 0 1 -60,0 z M30,42 a30,5 0 0 1 60,0 a30,5 0 0 1 -60,0 z"/>
+        </g>
+        <!-- Vendor (Lane 5 only) -->
+        <g transform="translate(570,170)">
+          <rect class="box-alt" x="0" y="0" width="120" height="64"/>
+          <text x="60" y="24" text-anchor="middle" class="label">vendor API</text>
+          <text x="60" y="42" text-anchor="middle" class="sub">external</text>
+        </g>
+
+        <!-- Lane 4 -> A, B, C -->
+        <line x1="230" y1="110" x2="140" y2="168" class="flow-cmd"/>
+        <line x1="280" y1="110" x2="290" y2="168" class="flow-cmd"/>
+        <line x1="330" y1="110" x2="430" y2="168" class="flow-cmd"/>
+
+        <!-- Lane 5 -> B, C, vendor -->
+        <line x1="510" y1="110" x2="320" y2="168" class="flow-cmd"/>
+        <line x1="540" y1="110" x2="480" y2="168" class="flow-cmd"/>
+        <line x1="590" y1="110" x2="610" y2="168" class="flow-cmd"/>
+
+        <!-- event bus -->
+        <rect class="bus" x="40" y="290" width="640" height="22"/>
+        <text x="360" y="306" text-anchor="middle" class="label">event bus</text>
+
+        <!-- journey A emits to bus -->
+        <line x1="120" y1="234" x2="120" y2="290" class="flow-evt"/>
+        <text x="128" y="266" class="sub">emits</text>
+
+        <!-- Lane 2 consumer -->
+        <g transform="translate(220,348)">
+          <rect class="box" x="0" y="0" width="160" height="46"/>
+          <text x="80" y="20" text-anchor="middle" class="label">downstream</text>
+          <text x="80" y="34" text-anchor="middle" class="sub">Lane 2 consumer · idempotent</text>
+        </g>
+        <line x1="300" y1="312" x2="300" y2="346" class="flow-evt"/>
+      </svg>
+      <div class="diagram-caption">Lanes layer. The engine conducts; journey services write; the bus carries side-effects. A real flow touches several lanes at once.</div>
     </div>
   </section>
 
@@ -714,13 +817,17 @@
         </ul>
         <h4>When not</h4>
         <ul>
-          <li>A late failure needs to roll earlier steps back.</li>
+          <li>Compensations distributed across consumers are becoming hard to trace — promote to Lane 3.</li>
           <li>One consumer is implicitly driving the rest. That's a saga; make it one.</li>
           <li>You need a single place to ask "where is this process right now?"</li>
         </ul>
 
         <h4 style="margin-top:14px;">What it costs</h4>
         <p>Cheap to add a new reactor, expensive to reason about end-to-end. Process state is implicit in the union of consumer tables; failure modes are the cross product of partial successes. Tracing exists, but the cost is real and only pays off once the system is genuinely event-shaped.</p>
+
+        <div class="note">
+          <strong>Sub-mode: choreography-based saga.</strong> Lane 2 with compensations distributed across consumers is the choreography-based variant of the saga pattern — same compensation discipline as Lane 3, but with the state machine implicit in the topology of producers and consumers. It works for small flows. When the implicit state machine becomes hard to reason about — typically three or more services with non-trivial compensation paths — promote to Lane 3 and make the state machine explicit.
+        </div>
       </div>
 
       <div>
@@ -890,7 +997,7 @@
         </ul>
 
         <h4 style="margin-top:14px;">What it costs</h4>
-        <p>An engine is an extra system to run, secure, version, and reason about. Workflow definitions need governance, and changes can affect cases already in flight. Promote to Lane 4 only when the process actually meets the bar — the promotion checklist below is the gate.</p>
+        <p>An engine in the regulated path adds three concrete costs beyond its own operations. First, in-flight executions are bound to the workflow version they started on; publishing a new version raises the question of migration for running cases. Second, the engine becomes a tier-1 dependency — its outage affects every Lane 4 and Lane 5 workflow simultaneously. Third, the engine and its definitions fall into the SOX and SOC 2 scope of the regulated processes it runs, which expands change-control overhead. Promote to Lane 4 only when the process actually meets the bar.</p>
       </div>
 
       <div>
@@ -987,6 +1094,7 @@
         <ul>
           <li>You're tempted to write to a system of record directly because it's faster — call the journey service instead.</li>
           <li>The process is part of a regulatory journey. That's Lane 4.</li>
+          <li>The workflow needs arbitrary code execution (custom script nodes, inline JS) to do its job — these are a separate attack surface even when no system of record is written, and require their own controls before Lane 5 is appropriate.</li>
         </ul>
 
         <h4 style="margin-top:14px;">What it costs</h4>
@@ -1126,6 +1234,15 @@
       <div class="diagram-caption">When the answer to Q1 is yes, Lane 4. When it's no and ops owns the routine, Lane 5. Edge cases — yes to Q1 but ops-owned, or no to Q1 but examiner-visible — should be escalated to platform + compliance, not resolved by the engineer building the workflow.</div>
     </div>
 
+    <p style="margin-top:16px;">
+      <strong>A note on BPMN.</strong> BPMN engines (Camunda, Zeebe) market the same Lane 4 value
+      proposition — execution history as a regulator-readable artifact — with the additional
+      property that BPMN diagrams are themselves a recognised process specification standard. The
+      lanes here are engine-agnostic; if a process needs the workflow definition to be readable
+      as a regulatory specification (not just the execution history), that is a real reason to
+      evaluate BPMN against the chosen engine. For most Lane 4 work, execution history is sufficient.
+    </p>
+
     <div class="rule-callout">
       <strong>Hard rule, both lanes:</strong> the engine never writes directly to systems of record.
       State changes always go through journey services. This is what preserves the journey's audit
@@ -1142,6 +1259,11 @@
     <div class="mistake">
       <div class="claim">Calling any chain of service calls a saga.</div>
       <div class="fix">The saga pattern specifically solves cross-service consistency under partial failure with explicit compensation. Without compensations you have a service method, not a saga — naming it one hides where the recovery logic should live.</div>
+    </div>
+
+    <div class="mistake">
+      <div class="claim">Picking the lane by duration alone.</div>
+      <div class="fix">Duration is a tiebreaker, not a discriminator. The primary signals are audit-visibility, human-in-the-loop, and whether compensations cross service boundaries. A two-hour batch job and a two-hour compliance review live in very different lanes.</div>
     </div>
 
     <div class="mistake">
@@ -1175,7 +1297,7 @@
   <!-- ====================================================== -->
   <section class="block" id="quick-ref">
     <h2><span class="num">§6</span> Quick reference</h2>
-    <p class="muted no-print">Single-page summary. Use <span class="kbd">Print card</span> in the header to print just this section.</p>
+    <p class="muted no-print">Single-screen summary.</p>
 
     <div class="qref">
       <div class="qref-meta">
@@ -1233,6 +1355,13 @@
         </tbody>
       </table>
 
+      <p class="small muted" style="margin-top:10px;">
+        <strong>Scheduled work.</strong> A cron-style trigger is not a lane of its own. A service
+        owning a periodic job is Lane 1 with a scheduler trigger; an ops-owned periodic routine
+        composing journey APIs is Lane 5. The lane is decided by ownership and what the job does,
+        not by how it is triggered.
+      </p>
+
       <h3>Promotion to Lane 4 (3 of 6 = promote)</h3>
       <ul>
         <li>Duration is hours-to-weeks.</li>
@@ -1276,14 +1405,6 @@
     apply(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
   });
 })();
-
-/* ============================================================
-   Print
-   ============================================================ */
-document.getElementById('print-btn').addEventListener('click', () => {
-  document.getElementById('quick-ref').scrollIntoView({ behavior: 'instant', block: 'start' });
-  window.print();
-});
 
 /* ============================================================
    TOC mobile toggle
@@ -1448,6 +1569,10 @@ document.getElementById('print-btn').addEventListener('click', () => {
       lane = 1;
       why.push('Single context, sub-second, no human — one transaction with audit trigger and outbox.');
       alt = { lane: 2, note: 'If side-effects start being added that other services need to react to, publish events and let them choreograph (Lane 2).' };
+    } else if (s.compensate === 'Yes' && s.scope === 'Yes') {
+      lane = 1;
+      why.push('Compensation inside one bounded context is rollback logic, not a saga — the existing transaction with audit trigger handles it.');
+      alt = { lane: 3, note: 'If the rollback genuinely reaches into another service, make the state machine explicit and treat it as a saga.' };
     } else if (s.compensate === 'Yes') {
       lane = 3;
       why.push('Compensations are the saga signal — make the state machine explicit.');
@@ -1457,9 +1582,9 @@ document.getElementById('print-btn').addEventListener('click', () => {
       why.push('Single bounded context with no compensation requirement — the lightest lane that works.');
       alt = { lane: 2, note: 'If anyone outside the service needs to react, emit and let them choreograph (Lane 2).' };
     } else {
-      lane = 2;
-      why.push('Default: independent reactions across services, no central coordinator.');
-      alt = { lane: 3, note: 'If you sketch the flow and one service is driving the others, that is a saga.' };
+      lane = 1;
+      why.push('Without a clearer signal, Lane 1 is the right starting point — one service, one transaction, audit and outbox handle it. Promote to a heavier lane only when a specific criterion makes it necessary.');
+      alt = { lane: 2, note: 'If the work actually crosses services and reactions are independent, choreography (Lane 2) is the next step up.' };
     }
 
     const laneNames = {
@@ -1476,7 +1601,7 @@ document.getElementById('print-btn').addEventListener('click', () => {
       ' &middot; <a href="#lane-' + lane + '" class="small">jump to panel</a>';
 
     if (answered < 3) {
-      recoWhy.textContent = why.join(' ') + ' (Partial answer — confidence will improve as you continue.)';
+      recoWhy.textContent = why.join(' ') + ' (Partial answer — until a clearer signal appears, the bias is Lane 1. Confidence will improve as you continue.)';
     } else {
       recoWhy.textContent = why.join(' ');
     }
