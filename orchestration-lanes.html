@@ -76,14 +76,15 @@
   .page {
     display: grid;
     grid-template-columns: 240px minmax(0, 1fr);
-    gap: 48px;
-    max-width: 1180px;
+    gap: 56px;
+    max-width: 1320px;
     margin: 0 auto;
-    padding: 32px 32px 96px;
+    padding: 32px 40px 96px;
   }
   @media (max-width: 900px) {
     .page { grid-template-columns: 1fr; gap: 16px; padding: 16px 14px 64px; }
   }
+  .topbar-inner { max-width: 1320px; }
 
   /* header */
   .topbar {
@@ -134,6 +135,7 @@
   nav.toc a.active { font-weight: 600; color: var(--accent); }
   nav.toc .group { color: var(--ink-3); font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.1em; margin: 1em 0 0.4em; }
 
+  nav.toc .toc-toggle { display: none; }
   @media (max-width: 900px) {
     nav.toc {
       position: static;
@@ -143,16 +145,16 @@
       padding: 8px 0;
       max-height: none;
     }
-    nav.toc details summary {
-      cursor: pointer; list-style: none; padding: 4px 0;
-      font-weight: 600; color: var(--ink);
+    nav.toc .toc-toggle {
+      display: block; width: 100%; text-align: left;
+      cursor: pointer; padding: 6px 0;
+      font: inherit; font-weight: 600; color: var(--ink);
+      background: transparent; border: 0;
     }
-    nav.toc details summary::-webkit-details-marker { display: none; }
-    nav.toc details summary::after { content: " ›"; color: var(--ink-3); }
-    nav.toc details[open] summary::after { content: " ⌄"; }
-  }
-  @media (min-width: 901px) {
-    nav.toc details > summary { display: none; }
+    nav.toc .toc-toggle::after { content: " ›"; color: var(--ink-3); }
+    nav.toc.open .toc-toggle::after { content: " ⌄"; }
+    nav.toc #toc-inner { display: none; padding-top: 4px; }
+    nav.toc.open #toc-inner { display: block; }
   }
 
   /* main */
@@ -429,31 +431,29 @@
 <div class="page">
 
   <nav class="toc" aria-label="Table of contents">
-    <details>
-      <summary>Contents</summary>
-      <div id="toc-inner">
-        <div class="group">Frame</div>
-        <ol>
-          <li><a href="#opening">The problem</a></li>
-          <li><a href="#chooser">Lane chooser</a></li>
-        </ol>
-        <div class="group">The five lanes</div>
-        <ol>
-          <li><a href="#lane-1">Lane 1 — Inline</a></li>
-          <li><a href="#lane-2">Lane 2 — Choreography</a></li>
-          <li><a href="#lane-3">Lane 3 — Saga as code</a></li>
-          <li><a href="#lane-4">Lane 4 — Engine, regulatory</a></li>
-          <li><a href="#lane-5">Lane 5 — Engine, operational</a></li>
-        </ol>
-        <div class="group">Decisions</div>
-        <ol>
-          <li><a href="#promotion">Promotion: L3 → L4</a></li>
-          <li><a href="#boundary">Regulatory vs operational</a></li>
-          <li><a href="#mistakes">Common mistakes</a></li>
-          <li><a href="#quick-ref">Quick reference</a></li>
-        </ol>
-      </div>
-    </details>
+    <button type="button" class="toc-toggle" aria-expanded="false">Contents</button>
+    <div id="toc-inner">
+      <div class="group">Frame</div>
+      <ol>
+        <li><a href="#opening">The problem</a></li>
+        <li><a href="#chooser">Lane chooser</a></li>
+      </ol>
+      <div class="group">The five lanes</div>
+      <ol>
+        <li><a href="#lane-1">Lane 1 — Inline</a></li>
+        <li><a href="#lane-2">Lane 2 — Choreography</a></li>
+        <li><a href="#lane-3">Lane 3 — Saga as code</a></li>
+        <li><a href="#lane-4">Lane 4 — Engine, regulatory</a></li>
+        <li><a href="#lane-5">Lane 5 — Engine, operational</a></li>
+      </ol>
+      <div class="group">Decisions</div>
+      <ol>
+        <li><a href="#promotion">Promotion: L3 → L4</a></li>
+        <li><a href="#boundary">Regulatory vs operational</a></li>
+        <li><a href="#mistakes">Common mistakes</a></li>
+        <li><a href="#quick-ref">Quick reference</a></li>
+      </ol>
+    </div>
   </nav>
 
   <main>
@@ -1284,6 +1284,28 @@ document.getElementById('print-btn').addEventListener('click', () => {
   document.getElementById('quick-ref').scrollIntoView({ behavior: 'instant', block: 'start' });
   window.print();
 });
+
+/* ============================================================
+   TOC mobile toggle
+   ============================================================ */
+(function () {
+  const nav = document.querySelector('nav.toc');
+  const btn = nav && nav.querySelector('.toc-toggle');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const open = nav.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  // close after navigating on mobile
+  nav.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      if (window.matchMedia('(max-width: 900px)').matches) {
+        nav.classList.remove('open');
+        btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  });
+})();
 
 /* ============================================================
    TOC active section
